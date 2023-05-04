@@ -89,4 +89,53 @@ go work init # Create a go.work file using go work init
 go work use ./tools/ ./tools/gopls/ # go work use MODULE_DIRECTORIES to add directories containing go.mod files to the workspace
 ```
 Now, the problem might be solved<br>
-Ref: https://github.com/golang/tools/blob/master/gopls/doc/workspace.md
+Ref: https://github.com/golang/tools/blob/master/gopls/doc/workspace.
+
+## Error handling
+1. In greetings.go, import errors module and modify the Hello function.
+2. Hello function will return var string and error
+```go
+func Hello(name string) (string, error) {
+	// If no name was given, return an error with a message.
+	if name == "" {
+		return "", errors.New("empty name")
+	}
+
+	message := fmt.Sprintf("Hello, %v. Welcome!", name)
+    // nil represents no-error 
+	return message, nil
+}
+```
+3. In hello.go (main), import log to print logs
+```go
+package main
+
+import (
+	"fmt"
+	"log"
+
+	"example.com/greetings"
+)
+
+func main() {
+	// Set properties of the predefined Logger, including
+	// the log entry prefix and a flag to disable printing
+	// the time, source file, and line number.
+	log.SetPrefix("greetings: ")
+	log.SetFlags(0)
+
+	// Request a greeting message.
+	message, err := greetings.Hello("")
+	// If an error was returned, print it to the console and
+	// exit the program.
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// If no error was returned, print the returned message
+	// to the console.
+	fmt.Println(message)
+}
+
+```
+Ref: https://go.dev/doc/tutorial/handle-errors
