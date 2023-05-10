@@ -3,26 +3,19 @@ package main
 import (
 	"fmt"
 	"gaaaamma/vertex"
+	"math/rand"
 	"sort"
 )
 
 func main() {
-	vertexes := []vertex.Vertex{{X: 1, Y: 5}, {X: 2, Y: 4}, {X: 3, Y: 6}}
-	fmt.Println(vertexes)
-	sort.Slice(vertexes, func(i, j int) bool {
-		return vertexes[i].Y < vertexes[j].Y
+	vtx := []vertex.Vertex{}
+	vtxGen := vertex.VertexGenerator()
+	for i := 0; i < 10; i++ {
+		vtx = append(vtx, vtxGen(rand.Intn(10)))
+	}
+	fmt.Println(vtx)
+	sort.Slice(vtx, func(i, j int) bool {
+		return vtx[i].P < vtx[j].P
 	})
-	fmt.Println(vertexes)
-
-	numbers := []int{2, 5, 1, 3, 3, 0, 4, 6, 7, 9, 8}
-	fmt.Println(numbers)
-	sort.Slice(numbers, func(i, j int) bool {
-		return numbers[i] < numbers[j]
-	})
-	fmt.Println("Asc:", numbers)
-	sort.Slice(numbers, func(i, j int) bool {
-		return numbers[i] > numbers[j]
-	})
-	fmt.Println("Desc:", numbers)
-
+	fmt.Println(vtx)
 }
