@@ -1,52 +1,100 @@
 package main
 
-import (
-	"container/heap"
-	"fmt"
-	"gaaaamma/vertex"
-)
+import "fmt"
 
-type PQ_Vertex []vertex.Vertex
+const null = -1
 
-func (pq PQ_Vertex) Len() int {
-	return len(pq)
+type TreeNode struct {
+	val   int
+	left  *TreeNode
+	right *TreeNode
 }
 
-func (pq PQ_Vertex) Less(i, j int) bool {
-	return pq[i].P < pq[j].P
+func CreateBinaryTree(input []int) *TreeNode {
+	if len(input) == 0 {
+		return nil
+	}
+	root := &TreeNode{input[0], nil, nil}
+	treeQue := []*TreeNode{root}
+
+	pingpong := true
+	for i := 1; i < len(input); i++ {
+		if input[i] == null {
+			if !pingpong {
+				treeQue = treeQue[1:]
+			}
+			pingpong = !pingpong
+		} else {
+			node := &TreeNode{input[i], nil, nil}
+			if pingpong {
+				treeQue[0].left = node
+			} else {
+				treeQue[0].right = node
+				treeQue = treeQue[1:]
+			}
+			pingpong = !pingpong
+			treeQue = append(treeQue, node)
+		}
+	}
+
+	return root
 }
 
-func (pq PQ_Vertex) Swap(i, j int) {
-	pq[i], pq[j] = pq[j], pq[i]
+func ShowSequence(root *TreeNode, operator func(*TreeNode)) {
+	operator(root)
+	fmt.Println()
 }
 
-func (pq *PQ_Vertex) Push(x any) {
-	(*pq) = append((*pq), x.(vertex.Vertex))
+func levelOrder(root *TreeNode) {
+	if root == nil {
+		fmt.Printf("Nil Tree")
+		return
+	}
+	treeQue := []*TreeNode{root}
+	for len(treeQue) > 0 {
+		if treeQue[0].left != nil {
+			treeQue = append(treeQue, treeQue[0].left)
+		}
+		if treeQue[0].right != nil {
+			treeQue = append(treeQue, treeQue[0].right)
+		}
+		fmt.Printf("%d ", treeQue[0].val)
+		treeQue = treeQue[1:]
+	}
 }
 
-func (pq *PQ_Vertex) Pop() interface{} {
-	n := len(*pq)
-	item := (*pq)[n-1]
-	(*pq) = (*pq)[:n-1]
-	return item
+func inorder(root *TreeNode) {
+	if root == nil {
+		return
+	}
+	inorder(root.left)
+	fmt.Printf("%d ", root.val)
+	inorder(root.right)
+}
+
+func postorder(root *TreeNode) {
+	if root == nil {
+		return
+	}
+	postorder(root.left)
+	postorder(root.right)
+	fmt.Printf("%d ", root.val)
+}
+
+func preorder(root *TreeNode) {
+	if root == nil {
+		return
+	}
+	fmt.Printf("%d ", root.val)
+	preorder(root.left)
+	preorder(root.right)
 }
 
 func main() {
-	vtxGen := vertex.VertexGenerator()
-	vtxPq := PQ_Vertex{}
-	heap.Init(&vtxPq) // Only *PQ_Vertex implement all method of heap.interface Ref: https://blog.csdn.net/timemachine119/article/details/54927121
-	fmt.Println("Init priority queue:", vtxPq)
-	for i, counter := 5, 0; i > 0; i-- {
-		heap.Push(&vtxPq, vtxGen(i*2))
-		counter++
-		fmt.Println("Round", counter, ":", vtxPq)
-	}
-	fmt.Println()
-
-	// Get element from priority queue
-	for len(vtxPq) > 0 {
-		fmt.Println("Get element:", heap.Pop(&vtxPq).(vertex.Vertex))
-		fmt.Println("After that:", vtxPq)
-		fmt.Println()
-	}
+	input := []int{5, 3, 7, 2, 4, 6, 8, 1, null, null, null, null, null, null, 9}
+	root := CreateBinaryTree(input)
+	ShowSequence(root, levelOrder)
+	ShowSequence(root, inorder)
+	ShowSequence(root, postorder)
+	ShowSequence(root, preorder)
 }
